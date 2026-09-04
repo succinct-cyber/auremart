@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+echo "SEENODE BUILD 0ec8993 STARTED"
+
 set -o errexit
 
 echo "===== BUILD START ====="
