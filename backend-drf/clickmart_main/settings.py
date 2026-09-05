@@ -189,3 +189,5 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
+
+CSRF_TRUSTED_ORIGINS = ['https://auremart-2.seenode.app']
