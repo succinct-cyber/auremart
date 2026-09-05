@@ -1,17 +1,25 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
+import os
+from django.core.management.base import BaseCommand
+from django.contrib.auth import get_user_model
 
-# Create your models here.
-# AbstractUser = add/modify any fields.
-# AbstractBaseUser = we use this if you want to get the full control over your user model
-# BaseUserManager = Employee.objects = Manager
+class Command(BaseCommand):
+    help = "Creates a superuser from env vars if one doesn't already exist"
 
+    def handle(self, *args, **options):
+        User = get_user_model()
+        email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
+        password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+        username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
 
-class User(AbstractUser):
-    email = models.EmailField(unique=True)
+        if not email or not password:
+            self.stdout.write(self.style.WARNING(
+                'DJANGO_SUPERUSER_EMAIL or DJANGO_SUPERUSER_PASSWORD not set, skipping.'
+            ))
+            return
 
-    USERNAME_FIELD = "email" # you can login with email address
-    REQUIRED_FIELDS = ["username"]
+        if User.objects.filter(email=email).exists():
+            self.stdout.write(self.style.SUCCESS(f'Superuser {email} already exists, skipping.'))
+            return
 
-    def __str__(self):
-        return self.email
+        User.objects.create_superuser(username=username, email=email, password=password)
+        self.stdout.write(self.style.SUCCESS(f'Superuser {email} created.'))
